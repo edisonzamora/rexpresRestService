@@ -3,6 +3,7 @@ package com.services.rexpres.controller;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,27 +14,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.services.rexpres.entities.Usuario;
 import com.services.rexpres.repository.UsuarioRepositpry;
+import com.services.rexpres.services.UsuarioServicio;
 
 @RestController
 public class UsuarioController {
 
 	@Autowired
-	private UsuarioRepositpry usuarioRepositpry;
+	private UsuarioServicio usuarioServicio;
 
 	// localhost:8080/usuario/api/usuarios
 	@GetMapping("/usuario/api/usuarios")
 	private List<Usuario> altaUsuario() {
 
-		return usuarioRepositpry.findAll();
+		return usuarioServicio.getAllUsuarios();
 	}
 
 	// localhost:8080/usuario/api/usuarios/ID
 	@GetMapping("/usuario/api/usuarios/{idusuario}")
 	private ResponseEntity<Usuario> altaUsuario(@PathVariable Integer idusuario) {
-		Optional<Usuario> usuario = usuarioRepositpry.findById(idusuario);
-		if (usuario.isPresent())
 
-			return ResponseEntity.ok(usuario.get());
+		Usuario usuario = usuarioServicio.finByIdUsuario(idusuario);
+
+		if (usuario != null)
+
+			return ResponseEntity.ok(usuario);
 
 		else
 
@@ -42,8 +46,17 @@ public class UsuarioController {
 
 	// localhost:8080/usuario/api/usuarios/alata
 	@PostMapping("/usuario/api/usuarios/alta")
-	private Usuario altaUsuaruio(@RequestBody Usuario usuario) {
-		return usuarioRepositpry.save(usuario);
+	private ResponseEntity<Usuario> altaUsuaruio(@RequestBody Usuario usuario_ingresado) {
+
+		Usuario nuevo_usuairo = usuarioServicio.altaUsuario(usuario_ingresado);
+
+		if (nuevo_usuairo == null)
+
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+
+		else
+
+			return ResponseEntity.ok(nuevo_usuairo);
 
 	}
 
@@ -52,50 +65,32 @@ public class UsuarioController {
 	 * 
 	 * @param Usuario (json)
 	 * @return usuario actalizado
-	 * **/
+	 **/
 	@PutMapping("/usuario/api/usuarios")
-	private ResponseEntity<Usuario> actualizarUsuario(@RequestBody Usuario usuarioNew) {
+	private ResponseEntity<Usuario> actualizarUsuario(@RequestBody Usuario usuario) {
 
-		if (null != usuarioNew.getIdusuario())
-			if (usuarioRepositpry.findById(usuarioNew.getIdusuario()).isPresent()) {
+		Usuario usuairo_actualizado = usuarioServicio.actualizaUsuario(usuario);
 
-				Usuario usuarioOld = ((Optional<Usuario>) usuarioRepositpry.findById(usuarioNew.getIdusuario())).get();
-				if (null != usuarioNew.getNombre()) {
-					if (!usuarioNew.getNombre().equalsIgnoreCase(""))
-						usuarioOld.setNombre(usuarioNew.getNombre());
-				}
-				if (null != usuarioNew.getApellido()) {
-					if (!usuarioNew.getApellido().equalsIgnoreCase(""))
-						usuarioOld.setApellido(usuarioNew.getApellido());
-				}
-				if (null != usuarioNew.getCorreo()) {
-					if (!usuarioNew.getCorreo().equalsIgnoreCase(""))
-						usuarioOld.setCorreo(usuarioNew.getCorreo());
-				}
-				if (null != usuarioNew.getRole()) {
-					if (!usuarioNew.getRole().equalsIgnoreCase(""))
-						usuarioOld.setRole(usuarioNew.getRole().toUpperCase());
-				}
-				if (null != usuarioNew.getActivo()) {
-					if (!usuarioNew.getActivo().equalsIgnoreCase(""))
-						usuarioOld.setActivo(usuarioNew.getActivo());
-				}
-				usuarioRepositpry.save(usuarioOld);
-				Usuario repUsuario = ((Optional<Usuario>) usuarioRepositpry.findById(usuarioNew.getIdusuario())).get();
-				return ResponseEntity.ok(repUsuario);
+		if (usuairo_actualizado == null)
 
-			} else {
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
 
-				return ResponseEntity.notFound().build();
-			}
 		else
-			return ResponseEntity.notFound().build();
+
+			return ResponseEntity.ok(usuairo_actualizado);
+
 	}
 
 	@DeleteMapping("/usuario/api/usuarios/baja/{id}")
-	private void elimiarUsuario(@PathVariable Integer id) {
+	private ResponseEntity elimiarUsuario(@PathVariable Integer id) {
 
-		usuarioRepositpry.deleteById(id);
+		if (usuarioServicio.elimiarUsuario(id))
+			
+			return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+		
+		else
+			
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
 	}
 
 }
