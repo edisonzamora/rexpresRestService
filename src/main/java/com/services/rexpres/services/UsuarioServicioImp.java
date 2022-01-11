@@ -170,8 +170,8 @@ public class UsuarioServicioImp implements UsuarioServicio {
 
 	@Override
 	public Usuario finByNombre(String nombre) {
-		// TODO Auto-generated method stub
-		return null;
+		Usuario usuario=usuarioRepositpry.findByNombre(nombre);
+		return usuario;
 	}
 
 }
