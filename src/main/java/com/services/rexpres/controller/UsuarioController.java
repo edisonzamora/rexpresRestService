@@ -29,8 +29,8 @@ public class UsuarioController {
 		return usuarioServicio.getAllUsuarios();
 	}
 
-	// localhost:8080/usuario/api/usuarios/ID
-	@GetMapping("/usuario/api/usuarios/{idusuario}")
+	// tets -> localhost:8080/usuario/api/id/
+	@GetMapping("/usuario/api/id/{idusuario}")
 	private ResponseEntity<Usuario> altaUsuario(@PathVariable Integer idusuario) {
 
 		Usuario usuario = usuarioServicio.finByIdUsuario(idusuario);
@@ -45,7 +45,7 @@ public class UsuarioController {
 	}
 
 	// localhost:8080/usuario/api/usuarios/alata
-	@PostMapping("/usuario/api/usuarios/alta")
+	@PostMapping("/alta")
 	private ResponseEntity<Usuario> altaUsuaruio(@RequestBody Usuario usuario_ingresado) {
 
 		Usuario nuevo_usuairo = usuarioServicio.altaUsuario(usuario_ingresado);
@@ -66,7 +66,7 @@ public class UsuarioController {
 	 * @param Usuario (json)
 	 * @return usuario actalizado
 	 **/
-	@PutMapping("/usuario/api/usuarios")
+	@PutMapping("/actualizar")
 	private ResponseEntity<Usuario> actualizarUsuario(@RequestBody Usuario usuario) {
 
 		Usuario usuairo_actualizado = usuarioServicio.actualizaUsuario(usuario);
@@ -81,15 +81,15 @@ public class UsuarioController {
 
 	}
 
-	@DeleteMapping("/usuario/api/usuarios/baja/{id}")
+	@DeleteMapping("/usuario/api/baja/{id}")
 	private ResponseEntity elimiarUsuario(@PathVariable Integer id) {
 
 		if (usuarioServicio.elimiarUsuario(id))
-			
+
 			return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-		
+
 		else
-			
+
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
 	}
 

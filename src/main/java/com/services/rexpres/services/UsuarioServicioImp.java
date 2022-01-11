@@ -3,6 +3,7 @@ package com.services.rexpres.services;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.services.rexpres.entities.Usuario;
 import com.services.rexpres.repository.UsuarioRepositpry;
@@ -17,6 +18,9 @@ public class UsuarioServicioImp implements UsuarioServicio {
 
 	@Autowired
 	private UsuarioRepositpry usuarioRepositpry;
+
+	@Autowired
+	BCryptPasswordEncoder bcry;
 
 	@Override
 	public List<Usuario> getAllUsuarios() {
@@ -45,11 +49,17 @@ public class UsuarioServicioImp implements UsuarioServicio {
 
 	@Override
 	public Usuario altaUsuario(Usuario usuario) {
+		// **datos obligatorios: nombre y correo
+		// **nos aseguramos que tengan algun valor y no sean nulos
 
 		if (usuario.getCorreo() == null || usuario.getNombre() == null || usuario.getCorreo().equalsIgnoreCase("")
 				|| usuario.getNombre().equalsIgnoreCase("") || usuario.getIdusuario() != null) {
 			return null;
 		} else {
+
+			// ** busamos el usuario por correo.
+			// ** si la respuesta no es nula el usuario exite, por lo que ya esta dado de
+			// alta
 			Usuario usuario_existente = usuarioRepositpry.findByCorreo(usuario.getCorreo());
 
 			if (usuario_existente != null) {
@@ -57,14 +67,26 @@ public class UsuarioServicioImp implements UsuarioServicio {
 				return null;
 			} else {
 
+				// **si el usuario no existe llenamos los datos por defecto (en caso que esten
+				// vacios)
+				// ** por defecto: activo= 1 en BD, role USU y password 12345
 				if (usuario.getActivo() == null || usuario.getActivo().equalsIgnoreCase("")) {
+
 					usuario.setActivo(ACTIVO);
 				}
 				if (usuario.getRole() == null || usuario.getActivo().equalsIgnoreCase("")) {
+
 					usuario.setRole(USUARIO.toUpperCase());
 				}
+				if (usuario.getPassword() == null || usuario.getPassword().equalsIgnoreCase("")) {
 
+					// *usamos bcryp para codificar el usuario
+					usuario.setPassword(bcry.encode("12345"));
+				}
+
+				// ** grabamos el usaurio en base de datos
 				usuario.getRole().toUpperCase();
+
 				return usuarioRepositpry.save(usuario);
 			}
 		}
@@ -144,6 +166,12 @@ public class UsuarioServicioImp implements UsuarioServicio {
 			}
 		}
 
+	}
+
+	@Override
+	public Usuario finByNombre(String nombre) {
+		Usuario usuario=usuarioRepositpry.findByNombre(nombre);
+		return usuario;
 	}
 
 }
