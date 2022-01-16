@@ -26,10 +26,18 @@ public class UserServices implements UserDetailsService{
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		//BUscamos en usuario por nombre
 		Usuario usuario_exiatente= usuarioServicio.finByNombre(username);
-		
-		//agredamos un roll para el usuario(de momto el role va se Admin por defecto)
 		List<GrantedAuthority> roles=new ArrayList<>();
-		roles.add(new SimpleGrantedAuthority("ADMIN"));
+		
+		if(usuario_exiatente.getRole().equalsIgnoreCase("ADM")) {
+		      	
+			roles.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+			roles.add(new SimpleGrantedAuthority("ROLE_USER"));
+		}
+		if(usuario_exiatente.getRole().equalsIgnoreCase("USU")) {
+	      	
+			roles.add(new SimpleGrantedAuthority("ROLE_USER"));
+		}
+		//agredamos un roll para el usuario(de momto el role va se Admin por defecto)
 		
 		//creamos el userDetails con el usuario,contreseña recogidas de base de datos y la lista de roles pero defecto
 		UserDetails user=new User(usuario_exiatente.getNombre(),usuario_exiatente.getPassword(),roles);
