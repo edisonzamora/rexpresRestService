@@ -1,9 +1,12 @@
 package com.services.rexpres.controller;
 
 import java.util.List;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,6 +26,8 @@ import com.services.rexpres.services.UsuarioServicio;
 
 @RestController
 public class UsuarioController {
+	
+	private final static Logger logger = LogManager.getLogger(UsuarioController.class);
 
 	@Autowired
 	private UsuarioServicio usuarioServicio;
@@ -33,17 +38,27 @@ public class UsuarioController {
 	@Autowired
 	private JwtTokenOperator jwtTokenOperator;
 
+	/**
+	 * @author Edison Zamora
+	 * @param nada
+	 * @return lista de usuarios
+	 * **/
 	// localhost:8080/usuario/api/usuarios
 	@GetMapping("/usuario/api/usuarios")
-	private List<Usuario> altaUsuario() {
-
+	private List<Usuario> todosUsuarios() {
+		logger.info(">>>>>>>>>>>>>>>>>>>>todosUsuarios<<<<<<<<<<<<<<<<<<<<");
 		return usuarioServicio.getAllUsuarios();
 	}
 
-	// tets -> localhost:8080/usuario/api/id/
+	/**
+	 * @author Edison Zamora
+	 * @param idusuario 
+	 * @return usuario (json)
+	 **/
+	//localhost:8080/usuario/api/id/
 	@GetMapping("/usuario/api/id/{idusuario}")
-	private ResponseEntity<Usuario> altaUsuario(@PathVariable Integer idusuario) {
-
+	private ResponseEntity<Usuario> buscarUsuario(@PathVariable Integer idusuario) {
+		logger.info(">>>>>>>>>>>>>>>>>>>>buscarUsuario<<<<<<<<<<<<<<<<<<<<");
 		Usuario usuario = usuarioServicio.finByIdUsuario(idusuario);
 
 		if (usuario != null)
@@ -51,13 +66,20 @@ public class UsuarioController {
 			return ResponseEntity.ok(usuario);
 
 		else
-
+			logger.info(">>>>>>>>>>>>>>>>>>>>buscarUsuario<<<<<<<<<<<<<<<<<<<<");
 			return ResponseEntity.notFound().build();
 	}
 
-	// localhost:8080/usuario/api/usuarios/alata
+	/**
+	 * @author Edison Zamora
+	 * @param usuario_ingresado
+	 * @return Usuario (json)
+	 */
+	// localhost:8080/alata
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/alta")
-	private ResponseEntity<Usuario> altaUsuaruio(@RequestBody Usuario usuario_ingresado) {
+	private ResponseEntity<Usuario> altaUsuario(@RequestBody Usuario usuario_ingresado) {
+		logger.info(">>>>>>>>>>>>>>>>>>>>altaUsuario<<<<<<<<<<<<<<<<<<<<");
 
 		Usuario nuevo_usuairo = usuarioServicio.altaUsuario(usuario_ingresado);
 
@@ -71,15 +93,16 @@ public class UsuarioController {
 
 	}
 
-	// localhost:8080/usuario/api/usuarios
 	/**
-	 * 
 	 * @param Usuario (json)
 	 * @return usuario actalizado
+	 * @author Edison Zamora
 	 **/
+	// localhost:8080/actualizar
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/actualizar")
 	private ResponseEntity<Usuario> actualizarUsuario(@RequestBody Usuario usuario) {
-
+		logger.info(">>>>>>>>>>>>>>>>>>>>actualizarUsuario<<<<<<<<<<<<<<<<<<<<");
 		Usuario usuairo_actualizado = usuarioServicio.actualizaUsuario(usuario);
 
 		if (usuairo_actualizado == null)
@@ -91,10 +114,16 @@ public class UsuarioController {
 			return ResponseEntity.ok(usuairo_actualizado);
 
 	}
-
+	/**
+	 * @author Edison Zamora
+	 * @param id
+	 * @return ResponseEntity= 202 Accepted o 406 Not Acceptable.
+	 */
+	// localhost:8080/usuario/api/baja/
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/usuario/api/baja/{id}")
 	private ResponseEntity<?> elimiarUsuario(@PathVariable Integer id) {
-
+		logger.info(">>>>>>>>>>>>>>>>>>>>elimiarUsuario<<<<<<<<<<<<<<<<<<<<");
 		if (usuarioServicio.elimiarUsuario(id))
 
 			return ResponseEntity.status(HttpStatus.ACCEPTED).build();
@@ -104,11 +133,17 @@ public class UsuarioController {
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
 	}
 
+	/**
+	 * @author Edison Zamora
+	 * @param Usuario (json)
+	 * @return ResponseEntity= json con token, nombre y roles
+	 */
+	// localhost:8080/login
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody Usuario loginUsuario) {
 //        if (bindingResult.hasErrors())
-//        	
 //            return new ResponseEntity(new Mensaje("Campos mal"), HttpStatus.BAD_REQUEST);
+		logger.info(">>>>>>>>>>>>>>>>>>>>login<<<<<<<<<<<<<<<<<<<<");
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginUsuario.getNombre(), loginUsuario.getPassword()));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
