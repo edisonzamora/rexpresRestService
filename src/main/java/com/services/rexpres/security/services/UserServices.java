@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.services.rexpres.entities.Usuario;
+import com.auth.entity.UsuarioEntity;
 import com.services.rexpres.services.UsuarioServicio;
 
 @Service
@@ -25,7 +25,7 @@ public class UserServices implements UserDetailsService{
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		//BUscamos en usuario por nombre
-		Usuario usuario_exiatente= usuarioServicio.finByNombre(username);
+		UsuarioEntity usuario_exiatente= usuarioServicio.finByNombre(username);
 		List<GrantedAuthority> roles=new ArrayList<>();
 		
 		if(usuario_exiatente.getRole().equalsIgnoreCase("ADM")) {
