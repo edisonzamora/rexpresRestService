@@ -35,7 +35,7 @@ public class JwtTokenOperator {
 		return Jwts.builder()
 				.setSubject(usuario_principal.getUsername())
 				.setIssuedAt(new Date())
-				.setExpiration(new Date(new Date().getTime() + expiration * 1000))
+				.setExpiration(new Date(new Date().getTime() + (2 * 60 * 1000)))
 				.signWith(SignatureAlgorithm.HS512, secret).compact();
 	}
 
@@ -44,15 +44,15 @@ public class JwtTokenOperator {
 			Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
 			return true;
 		} catch (MalformedJwtException e) {
-			logger.error("Token mal formado {}",e);
+			logger.error("Token mal formado: "+ e.getMessage());
 		} catch (UnsupportedJwtException e) {
-			logger.error("Token no soportado {}",e);
+			logger.error("Token no soportado: "+ e.getMessage());
 		} catch (ExpiredJwtException e) {
-			logger.error("Token expirado {}",e);
+			logger.error("Token expirado: "+ e.getMessage());
 		} catch (IllegalArgumentException e) {
-			logger.error("Token vacio {}",e);
+			logger.error("Token vacio: "+ e.getMessage());
 		} catch (SignatureException e) {
-			logger.error("Fallo con la firma {}",e);
+			logger.error("Fallo con la firma: "+ e.getMessage());
 		}
 		return false;
 	}

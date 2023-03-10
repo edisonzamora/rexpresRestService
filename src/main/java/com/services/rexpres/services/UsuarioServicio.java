@@ -2,19 +2,23 @@ package com.services.rexpres.services;
 
 import java.util.List;
 
-import com.services.rexpres.entities.Usuario;
+import com.auth.entity.UsuarioEntity;
+
+
+
+
 
 public interface UsuarioServicio {
 
-	public List<Usuario> getAllUsuarios();
+	public List<UsuarioEntity> getAllUsuarios();
 
-	public Usuario finByIdUsuario(Integer id);
+	public UsuarioEntity finByIdUsuario(Integer id);
 	
-	public Usuario finByNombre(String nombre);
+	public UsuarioEntity finByNombre(String nombre);
 
-	public Usuario altaUsuario(Usuario usuario);
+	public UsuarioEntity altaUsuario(UsuarioEntity usuario);
 
-	public Usuario actualizaUsuario(Usuario usuario);
+	public UsuarioEntity actualizaUsuario(UsuarioEntity usuario);
 	
 	public Boolean elimiarUsuario(Integer id);
 	
