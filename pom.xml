@@ -29,9 +29,9 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>com.autentificacion</groupId>
+			<groupId>com.rpx.autentificacion</groupId>
 			<artifactId>autentificacion</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

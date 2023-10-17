@@ -1,6 +1,9 @@
 package com.services.rexpres.security;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +26,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
 import com.services.rexpres.security.jwt.JwtAuthEntryPoint;
 import com.services.rexpres.security.jwt.JwtTokenFilter;
 
@@ -36,7 +43,20 @@ public class RexpresSecurity extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private BCryptPasswordEncoder bcryp;
-
+	
+	private static final RequestMatcher EXCLUDE_SECURITY;
+	static {
+		
+		List<RequestMatcher>list=new ArrayList<RequestMatcher>();
+		list.add(new AntPathRequestMatcher("/usuapi/login"));
+		list.add(new AntPathRequestMatcher("/auth/usuarios"));
+		list.add(new AntPathRequestMatcher("/usuapi/usuario/**"));
+		list.add(new AntPathRequestMatcher("/auth/passwordencryter"));
+		list.add(new AntPathRequestMatcher("/auth/alta"));
+		
+		EXCLUDE_SECURITY=new OrRequestMatcher(list);
+	}
+	
 	@Autowired
 	private JwtAuthEntryPoint jwtAuthEntryPoint;
 
@@ -73,11 +93,14 @@ public class RexpresSecurity extends WebSecurityConfigurerAdapter {
 				/*
 				 * Establecemos los perimos a las rutas
 				 */
-				.authorizeRequests()
+				.authorizeRequests().requestMatchers(EXCLUDE_SECURITY).permitAll()
 				// permitidas para cualquiera
-				.antMatchers("/usuapi/usuario/**").permitAll()
-				.antMatchers("/usuapi/login").permitAll()
-				.antMatchers("/auth/usuarios").permitAll()
+//				.authorizeRequests()
+//				.antMatchers("/usuapi/usuario/**").permitAll()
+//				.antMatchers("/usuapi/login").permitAll()
+//				.antMatchers("/auth/usuarios").permitAll()
+//				.antMatchers("/auth/passwordencryter").permitAll()
+//				.antMatchers("/auth/alta").permitAll()
 				// permitidas para roles ADMIN
 				.antMatchers("/usuapi/alta").hasRole("ADMIN")
 				.antMatchers("/usuapi/actualizar").hasRole("ADMIN")
@@ -116,7 +139,7 @@ public class RexpresSecurity extends WebSecurityConfigurerAdapter {
 		});
 
 		// añadir el fitro que valida el token
-		http.addFilterAfter(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 	}	
 
 }

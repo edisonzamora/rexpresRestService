@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.auth.entity.UsuarioEntity;
+import com.persistence.entity.UsuarioEntity;
 import com.services.rexpres.services.UsuarioServicio;
 
 @Service
@@ -26,6 +26,10 @@ public class UserServices implements UserDetailsService{
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		//BUscamos en usuario por nombre
 		UsuarioEntity usuario_exiatente= usuarioServicio.finByNombre(username);
+		if(usuario_exiatente==null) {
+			throw new UsernameNotFoundException("No se ha encontado el usuario");
+			
+		}
 		List<GrantedAuthority> roles=new ArrayList<>();
 		
 		if(usuario_exiatente.getRole().equalsIgnoreCase("ADM")) {

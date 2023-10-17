@@ -2,7 +2,7 @@ package com.services.rexpres.services;
 
 import java.util.List;
 
-import com.auth.entity.UsuarioEntity;
+import com.persistence.entity.UsuarioEntity;
 
 
 

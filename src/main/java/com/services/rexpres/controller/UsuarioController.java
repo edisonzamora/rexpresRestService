@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.catalina.core.ApplicationContext;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
@@ -38,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.auth.entity.UsuarioEntity;
+import com.persistence.entity.UsuarioEntity;
 import com.services.rexpres.dto.JwtDto;
 import com.services.rexpres.security.jwt.JwtTokenOperator;
 import com.services.rexpres.services.UsuarioServicio;
@@ -47,6 +48,9 @@ import com.services.rexpres.services.UsuarioServicio;
 @RequestMapping("/usuapi")
 public class UsuarioController {
 
+	@Value("${auth.usuarios}")
+	public String valor;
+	
 	protected final  Logger logger = LogManager.getLogger(getClass());
 
 	@Autowired
@@ -67,6 +71,7 @@ public class UsuarioController {
 	@GetMapping("/usuario/api/usuarios")
 	private List<UsuarioEntity> todosUsuarios(HttpServletRequest request) {
 		AnnotationConfigServletWebServerApplicationContext cotex=(AnnotationConfigServletWebServerApplicationContext)	request.getAttribute("org.springframework.web.servlet.DispatcherServlet.CONTEXT");
+		logger.info(valor);
 		logger.info(">>>>>>>>>>>>>>>>>>>>todosUsuarios<<<<<<<<<<<<<<<<<<<<");
 		return usuarioServicio.getAllUsuarios();
 	}

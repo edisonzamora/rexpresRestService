@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.auth.entity.UsuarioEntity;
+import com.persistence.entity.UsuarioEntity;
 import com.services.rexpres.repository.UsuarioRepository;
 
 @Service
